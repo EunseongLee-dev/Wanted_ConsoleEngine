@@ -12,6 +12,12 @@ namespace Wanted
 
 	Engine::~Engine()
 	{
+		// 메인 레벨 제거
+		if (mainLevel)
+		{
+			delete mainLevel;
+			mainLevel = nullptr;
+		}
 	}
 
 	void Engine::Run()
@@ -146,11 +152,11 @@ namespace Wanted
 		//	<< "DeltaTime: " << deltaTime
 		//	<< ", FPS: " << (1.0f / deltaTime) << "\n";
 
-		//// ESC키 눌리면 종료.
-		//if (GetKeyDown(VK_ESCAPE))
-		//{
-		//	QuitEngine();
-		//}
+		// ESC키 눌리면 종료.
+		if (GetKeyDown(VK_ESCAPE))
+		{
+			QuitEngine();
+		}
 
 		// 레벨에 이벤트 흘리기
 		// 예외처리
