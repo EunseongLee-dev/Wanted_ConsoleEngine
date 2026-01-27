@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Actor.h"
+#include "Actor/Actor.h"
 
-class __declspec(dllexport) TestActor : public Wanted::Actor
+class TestActor : public Wanted::Actor
 {
 protected:
 	virtual void BeginPlay() override;
