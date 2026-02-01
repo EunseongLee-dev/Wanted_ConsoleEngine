@@ -41,14 +41,14 @@ void TestActor::Tick(float deltaTime)
 		SetPosition(newPosition);
 	}
 
-	if (Input::Get().GetKey(VK_LEFT) && GetPosition().x < 0)
+	if (Input::Get().GetKey(VK_LEFT) && GetPosition().x > 0)
 	{
 		Vector2 newPosition = GetPosition();
 		newPosition.x -= 1;
 		SetPosition(newPosition);
 	}
 
-	if (Input::Get().GetKey(VK_UP) && GetPosition().y < 0)
+	if (Input::Get().GetKey(VK_UP) && GetPosition().y > 0)
 	{
 		Vector2 newPosition = GetPosition();
 		newPosition.y -= 1;

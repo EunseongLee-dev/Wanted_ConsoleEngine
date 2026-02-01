@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common\Common.h"
+#include "Common/Common.h"
 
 namespace Wanted
 {
@@ -34,25 +34,21 @@ namespace Wanted
 		// 현재 눌려있으면 반복 호출.
 		bool GetKey(int keyCode);
 
-		// 전역적으로 접근하는 함수
+		// 전역적으로 접근하는 함수.
 		static Input& Get();
 
 	private:
 		// 입력 처리 함수.
 		void ProcessInput();
 
-		// 기존 입력 저장 함수
+		// 기존 입력 저장 함수.
 		void SavePreviousInputStates();
 
 	private:
 		// 키 상태 저장용 배열.
 		KeyState keyStates[255] = { };
 
-		// 전역적으로 접근하도록 만들기 위한 전역 변수
+		// 전역적으로 접근하도록 만들기 위한 전역 변수.
 		static Input* instance;
-
 	};
-
 }
-
-

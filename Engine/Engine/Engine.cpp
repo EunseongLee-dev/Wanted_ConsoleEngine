@@ -1,50 +1,41 @@
 #include "Engine.h"
 #include "Level/Level.h"
 #include "Core/Input.h"
+#include "Util/Util.h"
 
 #include <iostream>
 #include <Windows.h>
 
 namespace Wanted
 {
-	// 전역 변수 초기화
+	// 전역 변수 초기화.
 	Engine* Engine::instance = nullptr;
 
 	Engine::Engine()
 	{
-		// 전역 변수 값 초기화
+		// 전역 변수 값 초기화.
 		instance = this;
 
-		// 입력 관리자 생성
+		// 입력 관리자 생성.
 		input = new Input();
 
-		// 설정 파일 로드
+		// 설정 파일 로드.
 		LoadSetting();
 
-		// 커서 끄기
-		CONSOLE_CURSOR_INFO info = {};
-		GetConsoleCursorInfo(
-			GetStdHandle(STD_OUTPUT_HANDLE),
-			&info
-		);
-
-		info.bVisible = false;
-		SetConsoleCursorInfo(
-			GetStdHandle(STD_OUTPUT_HANDLE),
-			&info
-		);
+		// 커서 끄기.
+		Util::TurnOffCursor();
 	}
 
 	Engine::~Engine()
 	{
-		// 메인 레벨 제거
+		// 메인 레벨 제거.
 		if (mainLevel)
 		{
 			delete mainLevel;
 			mainLevel = nullptr;
 		}
 
-		// 입력 관리자 제거
+		// 입력 관리자 제거.
 		if (input)
 		{
 			delete input;
@@ -70,8 +61,6 @@ namespace Wanted
 		currentTime = time.QuadPart;
 		previousTime = currentTime;
 
-		// 기준 프레임(단위: 초).
-		//float targetFrameRate = 120.0f;
 		setting.framerate
 			= setting.framerate == 0.0f ? 60.0f : setting.framerate;
 		float oneFrameTime = 1.0f / setting.framerate;
@@ -106,24 +95,17 @@ namespace Wanted
 				previousTime = currentTime;
 
 				input->SavePreviousInputStates();
+
+				// 레벨에 요청된 추가/제거 처리.
+				if (mainLevel)
+				{
+					mainLevel->ProcessAddAndDestroyActors();
+				}
 			}
 		}
 
-		// Todo: 정리 작업.
-		std::cout << "Engine has been shutdown....\n";
-
-		// 커서 켜기
-		CONSOLE_CURSOR_INFO info = {};
-		GetConsoleCursorInfo(
-			GetStdHandle(STD_OUTPUT_HANDLE),
-			&info
-		);
-
-		info.bVisible = true;
-		SetConsoleCursorInfo(
-			GetStdHandle(STD_OUTPUT_HANDLE),
-			&info
-		);
+		// 정리.
+		Shutdown();
 	}
 
 	void Engine::QuitEngine()
@@ -133,25 +115,25 @@ namespace Wanted
 
 	void Engine::SetNewLevel(Level* newLevel)
 	{
-		// 기존 레벨 있는지 확인
-		// 있으면 기존 레벨 제거
-		// Todo: 임시코드, 레벨 전환 할 때는 바로 제거하면 안됨
+		// 기존 레벨 있는지 확인.
+		// 있으면 기존 레벨 제거.
+		// Todo: 임시 코드. 레벨 전환할 때는 바로 제거하면 안됨.
 		if (mainLevel)
 		{
 			delete mainLevel;
 			mainLevel = nullptr;
 		}
 
-		// 레벨 설정
+		// 레벨 설정.
 		mainLevel = newLevel;
-
 	}
 
 	Engine& Engine::Get()
 	{
-		// 예외처리
+		// 예외처리.
 		if (!instance)
 		{
+			// Silent is violent.
 			std::cout << "Error: Engine::Get(). instance is null\n";
 			__debugbreak();
 		}
@@ -159,37 +141,50 @@ namespace Wanted
 		return *instance;
 	}
 
+	void Engine::Shutdown()
+	{
+		// 정리 작업.
+		std::cout << "Engine has been shutdown....\n";
+
+		// 커서 켜기.
+		Util::TurnOnCursor();
+	}
+
 	void Engine::LoadSetting()
 	{
-		// 엔진 설정 파일 열기
+		// 엔진 설정 파일 열기.
 		FILE* file = nullptr;
 		fopen_s(&file, "../Config/Setting.txt", "rt");
-		
-		// 예외 처리
+
+		// 예외처리.
 		if (!file)
 		{
 			std::cout << "Failed to open engine setting file.\n";
 			__debugbreak();
+			return;
 		}
 
-		// 파일에서 읽은 데이터 담을 버퍼
+		// 파일에서 읽은 데이터 담을 버퍼.
 		char buffer[2048] = {};
 
-		// 파일에서 읽기
+		// 파일에서 읽기.
 		size_t readSize = fread(buffer, sizeof(char), 2048, file);
 
-		// 문자열 포맷 활용해서 데이터 추출
+		// 문자열 포맷 활용해서 데이터 추출.
 		sscanf_s(buffer, "framerate = %f", &setting.framerate);
 
-		//파일 닫기
+		// 파일 닫기.
 		fclose(file);
 	}
 
 	void Engine::BeginPlay()
 	{
-		// 레벨이 있으면 이벤트 전달
+		// 레벨이 있으면 이벤트 전달.
 		if (!mainLevel)
 		{
+			// Silent is violent.
+			// 침묵은 폭력이다.
+			// -> 로그 메시지 안남기면 나빠.
 			std::cout << "mainLevel is empty.\n";
 			return;
 		}
@@ -203,25 +198,29 @@ namespace Wanted
 		//	<< "DeltaTime: " << deltaTime
 		//	<< ", FPS: " << (1.0f / deltaTime) << "\n";
 
-		// 레벨에 이벤트 흘리기
-		// 예외처리
+
+
+		// 레벨에 이벤트 흘리기.
+		// 예외처리.
 		if (!mainLevel)
 		{
 			std::cout << "Error: Engine::Tick(). mainLevel is empty.\n";
 			return;
 		}
+
 		mainLevel->Tick(deltaTime);
 	}
 
 	void Engine::Draw()
 	{
-		// 레벨에 이벤트 흘리기
-		// 예외처리
+		// 레벨에 이벤트 흘리기.
+		// 예외처리.
 		if (!mainLevel)
 		{
 			std::cout << "Error: Engine::Draw(). mainLevel is empty.\n";
 			return;
 		}
+
 		mainLevel->Draw();
 	}
 }

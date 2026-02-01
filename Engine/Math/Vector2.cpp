@@ -3,10 +3,10 @@
 
 namespace Wanted
 {
-	 Vector2 Vector2::Zero(0, 0);
-	 Vector2 Vector2::One(1, 1);
-	 Vector2 Vector2::Up(0, 1);
-	 Vector2 Vector2::Right(1, 0);
+	Vector2 Vector2::Zero(0, 0);
+	Vector2 Vector2::One(1, 1);
+	Vector2 Vector2::Up(0, 1);
+	Vector2 Vector2::Right(1, 0);
 
 	Vector2::Vector2()
 	{
@@ -16,7 +16,7 @@ namespace Wanted
 		: x(x), y(y)
 	{
 	}
-
+	
 	Vector2::~Vector2()
 	{
 		if (string)
@@ -25,10 +25,10 @@ namespace Wanted
 			string = nullptr;
 		}
 	}
-
+	
 	const char* Vector2::ToString()
 	{
-		// 기존 문자열이 있다면 제거
+		// 기존 문자열이 있다면 제거.
 		if (string)
 		{
 			delete[] string;
@@ -41,20 +41,33 @@ namespace Wanted
 
 		return string;
 	}
+
 	Vector2 Vector2::operator+(const Vector2& other) const
 	{
 		return Vector2(x + other.x, y + other.y);
 	}
+
 	Vector2 Vector2::operator-(const Vector2& other) const
 	{
 		return Vector2(x - other.x, y - other.y);
 	}
+
 	bool Vector2::operator==(const Vector2& other) const
 	{
 		return (x == other.x) && (y == other.y);
 	}
+
 	bool Vector2::operator!=(const Vector2& other) const
 	{
 		return !(*this == other);
+	}
+
+	Vector2::operator COORD() const
+	{
+		COORD coord = {};
+		coord.X = static_cast<short>(x);
+		coord.Y = static_cast<short>(y);
+
+		return coord;
 	}
 }

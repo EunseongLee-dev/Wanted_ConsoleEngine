@@ -1,22 +1,24 @@
-#include "input.h"
+#include "Input.h"
 #include <Windows.h>
 #include <iostream>
 
-// Ctrl + Home 키로 파일 제일 위로 이동
-// Rider는 헤더 자동 추가 해줌
+// Ctrl + Home키로 파일 제일 위로 이동 가능.
+// Rider는 헤더 자동 추가 해줌.
 namespace Wanted
 {
-	// 전역 변수 초기화
+	// 전역 변수 초기화.
 	Input* Input::instance = nullptr;
 
 	Input::Input()
 	{
-		// 객체가 초기화되면 자기 자신의 주소를 저장
+		// 객체가 초기화되면 자기 자신의 주소를 저장.
 		instance = this;
 	}
+	
 	Input::~Input()
 	{
 	}
+
 	bool Input::GetKeyDown(int keyCode)
 	{
 		return keyStates[keyCode].isKeyDown
@@ -36,23 +38,22 @@ namespace Wanted
 
 	Input& Input::Get()
 	{
-		// 싱글턴
-		// 이 함수는 콘텐츠 프로젝트에서 접근함
-		// 따라서 엔진은 이미 초기화 완료 상태
+		// 싱글턴(Singleton).
+		// 이 함수는 콘텐츠 프로젝트에서 접근함.
+		// 따라서 엔진은 이미 초기화 완료 상태.
 		if (!instance)
 		{
 			//return *nullptr;
 			std::cout << "Error: Input::Get(). instance is null\n";
 
-			// 디버그 모드에서만 동작함
-			// 자동으로 중단점 걸림
+			// 디버그 모드에서만 동작함.
+			// 자동으로 중단점 걸림.
 			__debugbreak();
 		}
 
-		// Lazy-Pattern
-		// 이펙티브 C++에 나옴
-		// static Input instance;
-
+		// Lazy-Pattern.
+		// 이펙티브 C++에 나옴.
+		//static Input instance;
 		return *instance;
 	}
 
@@ -66,7 +67,7 @@ namespace Wanted
 				= (GetAsyncKeyState(ix) & 0x8000) > 0 ? true : false;
 		}
 	}
-
+	
 	void Input::SavePreviousInputStates()
 	{
 		// 현재 입력 값을 이전 입력 값으로 저장.
