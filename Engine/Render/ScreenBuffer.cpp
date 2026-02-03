@@ -32,7 +32,7 @@ namespace Wanted
 		rect.Right = static_cast<short>(screenSize.x - 1);
 		rect.Bottom = static_cast<short>(screenSize.y - 1);
 
-		if (SetConsoleWindowInfo(buffer, true, &rect))
+		if (!SetConsoleWindowInfo(buffer, true, &rect))
 		{
 			/*DWORD errorCode = GetLastError();*/
 
